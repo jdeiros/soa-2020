@@ -1,6 +1,7 @@
-package com.unlam.dimequiensoy;
+package com.unlam.dimequiensoy.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -18,10 +19,11 @@ import com.google.android.material.textfield.TextInputEditText;
 
 //import com.google.firebase.database.DatabaseReference;
 //import com.google.firebase.database.FirebaseDatabase;
+import com.unlam.dimequiensoy.R;
 import com.unlam.dimequiensoy.includes.MyToolbar;
 import com.unlam.dimequiensoy.models.UserRequest;
 import com.unlam.dimequiensoy.models.UserResponse;
-import com.unlam.dimequiensoy.services.RetrofitService;
+import com.unlam.dimequiensoy.services.RetrofitServiceRegister;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -36,12 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText mTextInputCommission;
     Button mButtonRegister;
 
-
     AlertDialog mDialog;
-    //public IntentFilter filter;
-    //private ReceiverOperation receiver = new ReceiverOperation();
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void userRegister() {
 
         UserRequest request = new UserRequest();
-        request.setEnv("TEST");
+        request.setEnv(getString(R.string.environment));
         request.setName(mTextInputName.getText().toString());
         request.setLastname(mTextInputLastName.getText().toString());
         request.setDni(Long.parseLong(mTextInputDNI.getText().toString()));
@@ -91,8 +88,8 @@ public class RegisterActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(getString(R.string.retrofit_server))
                 .build();
-        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
-        Call<UserResponse> call = retrofitService.register(request);
+        RetrofitServiceRegister retrofitServiceRegister = retrofit.create(RetrofitServiceRegister.class);
+        Call<UserResponse> call = retrofitServiceRegister.register(request);
         mDialog.show();
         call.enqueue(new Callback<UserResponse>() {
             @Override
@@ -101,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "Usuario Registrado.", Toast.LENGTH_SHORT).show();
                     Toast.makeText(RegisterActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
                     Toast.makeText(RegisterActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
-
+                    goToSelectOptionGame();
                 }else{
                     Toast.makeText(RegisterActivity.this, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -117,7 +114,10 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-
+    private void goToSelectOptionGame() {
+        Intent intent = new Intent(RegisterActivity.this, SelectOptionGameActivity.class);
+        startActivity(intent);
+    }
 //    private void registerUserFirebase() {
 //        final String env = getString(R.string.environment);
 //        final String name = mTextInputName.getText().toString();

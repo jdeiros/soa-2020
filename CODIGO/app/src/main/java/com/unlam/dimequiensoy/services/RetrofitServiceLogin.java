@@ -7,7 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
-public interface RetrofitService {
-    @POST("api/register")
+public interface RetrofitServiceLogin {
+    @POST("api/login")
     Call<UserResponse> register(@Body UserRequest request);
 }

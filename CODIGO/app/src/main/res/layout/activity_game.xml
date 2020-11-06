@@ -6,62 +6,57 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/colorPrimary"
-    tools:context=".activities.MainActivity">
+    android:nestedScrollingEnabled="false"
+    tools:context=".activities.GameActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:src="@drawable/quiensoy"
-            android:layout_marginTop="50dp"
-            android:layout_gravity="center"/>
         <TextView
+            android:id="@+id/textCountdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Dime Quien Soy!"
+            android:text="90"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/textCharacter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PERSONAJE"
+            android:textAlignment="center"
+            android:textColor="@color/colorWhite"
+            android:layout_margin="20dp"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/textAccelerometer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATOS ACELEROMETRO"
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
             android:layout_margin="40dp"
             android:textSize="20sp"
             android:textStyle="bold"/>
+
         <TextView
+            android:id="@+id/textProximity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Seleccione una opción"
+            android:text="PROXIMIDAD"
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
-            android:layout_margin="40dp"
+            android:layout_margin="20dp"
             android:textSize="20sp"
             android:textStyle="bold"/>
-
-        <Button
-            android:id="@+id/btnGoToLogin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/ColorBlueLight"
-            android:textColor="@color/colorWhite"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:text="YA TENGO CUENTA"/>
-
-        <Button
-            android:id="@+id/btnGoToRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/colorWhite"
-            android:text="REGISTRARME AHORA"/>
 
 
     </LinearLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

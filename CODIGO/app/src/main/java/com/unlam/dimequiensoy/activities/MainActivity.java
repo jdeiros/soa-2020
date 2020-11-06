@@ -1,4 +1,4 @@
-package com.unlam.dimequiensoy;
+package com.unlam.dimequiensoy.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.unlam.dimequiensoy.includes.MyToolbar;
+import com.unlam.dimequiensoy.R;
 
 public class MainActivity extends AppCompatActivity {
 
