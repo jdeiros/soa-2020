@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.GameActivity"></activity>
+        <activity android:name=".activities.GameActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            ></activity>
         <activity android:name=".activities.SelectOptionGameActivity"
             android:parentActivityName=".activities.MainActivity"/>
         <activity
