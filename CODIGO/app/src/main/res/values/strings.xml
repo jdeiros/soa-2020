@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">Dime Quien Soy</string>
+    <string name="app_name">DimeQuienSoy</string>
+
+    <string name="retrofit_server">http://so-unlam.net.ar/api/</string>
+
+    <string name="environment">TEST</string>
+
 </resources>
