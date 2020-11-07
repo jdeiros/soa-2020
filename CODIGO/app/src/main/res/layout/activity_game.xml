@@ -2,10 +2,11 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutGame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorBlue"
     android:nestedScrollingEnabled="false"
     tools:context=".activities.GameActivity">
 
@@ -14,15 +15,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+
         <TextView
             android:id="@+id/textCountdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="90"
+            android:text="Tiempo"
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
             android:layout_margin="20dp"
-            android:textSize="20sp"
+            android:textSize="30sp"
             android:textStyle="bold"/>
         <TextView
             android:id="@+id/textCharacter"
@@ -32,30 +35,41 @@
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
             android:layout_margin="20dp"
-            android:textSize="20sp"
+            android:textSize="60sp"
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/textAccelerometer"
+            android:id="@+id/textInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DATOS ACELEROMETRO"
+            android:text=""
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
-            android:layout_margin="40dp"
-            android:textSize="20sp"
+            android:layout_margin="15dp"
+            android:textSize="10sp"
             android:textStyle="bold"/>
-
+        <Button
+            android:id="@+id/btnContinue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CONTINUAR"
+            android:background="@drawable/rounded_button"
+            android:backgroundTint="@color/colorYellow"
+            android:visibility="invisible"
+            android:layout_margin="10dp"
+            android:textColor="@color/colorWhite" />
         <TextView
-            android:id="@+id/textProximity"
+            android:id="@+id/textSensors"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="PROXIMIDAD"
+            android:text="Sensores"
+            android:layout_gravity="bottom"
             android:textAlignment="center"
             android:textColor="@color/colorWhite"
-            android:layout_margin="20dp"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textSize="11sp"
+            android:layout_margin="1dp"
+            tools:ignore="RtlCompat" />
+
 
 
     </LinearLayout>

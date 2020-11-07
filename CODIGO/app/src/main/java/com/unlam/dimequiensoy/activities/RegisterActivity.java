@@ -3,6 +3,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +30,7 @@ import com.unlam.dimequiensoy.services.RetrofitServiceRegister;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    // creo la variable sharedpreference
     SharedPreferences mPref;
     //DatabaseReference mDatabase;
 
@@ -37,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText mTextInputPasswordRegister;
     TextInputEditText mTextInputCommission;
     Button mButtonRegister;
+
 
     AlertDialog mDialog;
 
@@ -51,8 +56,9 @@ public class RegisterActivity extends AppCompatActivity {
 
         //mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        mPref = getApplicationContext().getSharedPreferences("typeUser", MODE_PRIVATE);
-
+        //inicializo la variable sharepreference con el identificador "token" para este preference
+        mPref = getApplicationContext().getSharedPreferences("token", MODE_PRIVATE);
+        Editor editor = mPref.edit();
 
         mTextInputName = findViewById(R.id.textInputName);
         mTextInputLastName = findViewById(R.id.txtInputLastName);
@@ -65,7 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userRegister();
+                    userRegister(editor);
                 //registerUserFirebase();
             }
         });
@@ -73,7 +79,8 @@ public class RegisterActivity extends AppCompatActivity {
         //cofigureBroadcastReceiver();
     }
 
-    private void userRegister() {
+
+    private void userRegister(Editor editor) {
 
         UserRequest request = new UserRequest();
         request.setEnv(getString(R.string.environment));
@@ -95,10 +102,17 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                 if(response.isSuccessful()){
+
                     Toast.makeText(RegisterActivity.this, "Usuario Registrado.", Toast.LENGTH_SHORT).show();
                     Toast.makeText(RegisterActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
                     Toast.makeText(RegisterActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
+                    //guardo en sharedpreferences con los identificadores currenToken y refreshToken
+                    editor.putString("currentToken", response.body().getToken());
+                    editor.putString("refreshToken", response.body().getToken_refresh());
+                    editor.putString("userAlreadyLoggedIn", "true");
+                    editor.apply();
                     goToSelectOptionGame();
+
                 }else{
                     Toast.makeText(RegisterActivity.this, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                 }

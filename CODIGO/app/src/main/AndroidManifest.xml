@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.unlam.dimequiensoy">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -12,19 +13,30 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.GameActivity"
-            android:screenOrientation="landscape"
+        <activity android:name=".activities.EndGameActivity"></activity>
+        <activity
+            android:name=".activities.GameActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            ></activity>
-        <activity android:name=".activities.SelectOptionGameActivity"
-            android:parentActivityName=".activities.MainActivity"/>
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".activities.SelectOptionGameActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.LoginActivity"
-            android:parentActivityName=".activities.MainActivity" />
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.RegisterActivity"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity android:name=".activities.MainActivity">
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

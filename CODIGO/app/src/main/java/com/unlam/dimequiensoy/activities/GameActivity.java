@@ -1,17 +1,29 @@
 package com.unlam.dimequiensoy.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.unlam.dimequiensoy.R;
+import com.unlam.dimequiensoy.models.Personaje;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -19,54 +31,77 @@ import java.util.List;
 
 public class GameActivity extends AppCompatActivity implements SensorEventListener {
 
+    public static final int MINUTE_IN_MILLI_SECONDS = 60000;
+    public static final int TOTAL_GAME_PLAY_MILLI_SECONDS = 90000;
     private SensorManager mSensorManager;
-    private TextView textAccelerometer;
+
     private TextView textCharacter;
-    private TextView textProximity;
+    private TextView textSensors;
     private TextView textCountdown;
-    private List<String> characters = new ArrayList<String>();
-    private int charactersCounter;
+    private TextView textInfo;
+    private Button btnContinue;
+
+    private CoordinatorLayout coordinatorLayout;
+
+    private List<Personaje> personajes = new ArrayList<>();
+    private List<Personaje> personajesResultado = new ArrayList<>();
+    private int personajesCounter;
     DecimalFormat dosdecimales = new DecimalFormat("###.###");
 
     private CountDownTimer countDownTimer;
     private long timeLeftInMilliseconds = 95000;
     private boolean timerRunning=false;
     private boolean flagInGame;
+    private boolean pause;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        textAccelerometer  = (TextView) findViewById(R.id.textAccelerometer);
-        textProximity  = (TextView) findViewById(R.id.textProximity);
+        textSensors = (TextView) findViewById(R.id.textSensors);
         textCountdown = (TextView) findViewById(R.id.textCountdown);
         textCharacter  = (TextView) findViewById(R.id.textCharacter);
-
+        textInfo  = (TextView) findViewById(R.id.textInfo);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layoutGame);
         loadCharacters();
         // Accedemos al servicio de sensores
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
+        btnContinue = findViewById(R.id.btnContinue);
+
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                gameContinue();
+            }
+        });
 
     }
 
     private void loadCharacters() {
-        characters.add("Sandro");
-        characters.add("Cheff Donato");
-        characters.add("Madonna");
-        characters.add("Maradona");
-        characters.add("Mesi");
-        characters.add("Julio Boca");
-        characters.add("Fangio");
-        characters.add("Patouruzú");
-        characters.add("Clemente");
-        characters.add("Trapito");
-        characters.add("Profesor Neurus");
-        characters.add("Bruja Cachavacha");
-        characters.add("Isidoro Cañones");
-        characters.add("Ricardo Darín");
-        characters.add("Guillermo Francella");
-        characters.add("Susana Giménez");
-        charactersCounter = characters.size()-1;
+        personajes.add(new Personaje(1, "Sandro", false, false));
+        personajes.add(new Personaje(2, "Cheff Donato", false, false));
+        personajes.add(new Personaje(3, "Madonna", false, false));
+        personajes.add(new Personaje(4, "Maradona", false, false));
+        personajes.add(new Personaje(5, "Mesi", false, false));
+        personajes.add(new Personaje(6, "Julio Boca", false, false));
+        personajes.add(new Personaje(7, "Fangio", false, false));
+        personajes.add(new Personaje(8, "Patouruzú", false, false));
+        personajes.add(new Personaje(9, "Clemente", false, false));
+        personajes.add(new Personaje(10, "Trapito", false, false));
+        personajes.add(new Personaje(11, "Bruja Cachavacha", false, false));
+        personajes.add(new Personaje(12, "Profesor Neurus", false, false));
+        personajes.add(new Personaje(13, "Isidoro Cañones", false, false));
+        personajes.add(new Personaje(14, "Ricardo Darín", false, false));
+        personajes.add(new Personaje(15, "Guillermo Francella", false, false));
+        personajes.add(new Personaje(16, "Susana Giménez", false, false));
+        personajes.add(new Personaje(17, "Moria Casan", false, false));
+        personajes.add(new Personaje(18, "Guillermo Andino", false, false));
+        personajes.add(new Personaje(19, "Yoda", false, false));
+        personajes.add(new Personaje(20, "Slash", false, false));
+        personajes.add(new Personaje(21, "Angus Young", false, false));
+
+        personajesCounter = personajes.size()-1;
     }
 
     public void startStopTimer(){
@@ -93,7 +128,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
 
             @Override
             public void onFinish() {
-
+                goEndGameGame();
             }
         }.start();
         //textCountdown.setText("PAUSA");
@@ -101,33 +136,32 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void updateTimer() {
-        int minutes = (int) timeLeftInMilliseconds / 60000;
-        int seconds = (int) timeLeftInMilliseconds % 60000 / 1000;
+        int minutes = (int) timeLeftInMilliseconds / MINUTE_IN_MILLI_SECONDS;
+        int seconds = (int) timeLeftInMilliseconds %  MINUTE_IN_MILLI_SECONDS / 1000;
         String timeLeftText;
         timeLeftText = "" + minutes;
         timeLeftText += ":";
         if (seconds < 10) timeLeftText += "0";
         timeLeftText += seconds;
 
+        textCountdown.setText(timeLeftText);
+
         if (timeLeftInMilliseconds > 91000) {
             timeLeftText = "" + (seconds - 29);
-        } else if (timeLeftInMilliseconds > 90000) {
-            timeLeftText = "YA";
-            textCharacter.setText(nextCharacter());
+            textCountdown.setText("Preparese, el juego comenzara en: " + timeLeftText);
+        } else if (timeLeftInMilliseconds > TOTAL_GAME_PLAY_MILLI_SECONDS) {
+            textCharacter.setText(nextCharacter(false));
         }
 
-        textCountdown.setText(timeLeftText);
     }
 
     // Metodo que escucha el cambio de los sensores
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onSensorChanged(SensorEvent event)
     {
-        String txt = "";
-
         // Cada sensor puede lanzar un thread que pase por aqui
         // Para asegurarnos ante los accesos simultaneos sincronizamos esto
-
         synchronized (this)
         {
             Log.d("sensor", event.sensor.getName());
@@ -140,46 +174,21 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     float y = event.values[1];
                     float z = event.values[2];
 
-                    txt += "Acelerometro:\n";
-                    txt += "x: " + dosdecimales.format(x) + " m/seg2 \n";
-                    txt += "y: " + dosdecimales.format(y) + " m/seg2 \n";
-                    txt += "z: " + dosdecimales.format(z) + " m/seg2 \n";
-                    textAccelerometer.setText(txt);
+                    textSensors.setText(getStringAccelerometerData(x, y, z));
 
-                    if (z > 7)
-                    {
-                        textAccelerometer.setText("GANO -> SIGUIENTE PERSONAJE");
-                        if(flagInGame){
-                            textCharacter.setText(nextCharacter());
-                            flagInGame = false;
-                        }
-                    }
-                    if (z < -7)
-                    {
-                        textAccelerometer.setText("PERDIÓ -> SIGUIENTE PERSONAJE");
-                        if(flagInGame){
-                            textCharacter.setText(nextCharacter());
-                            flagInGame = false;
-                        }
-
-                    }
-                    if (z > -7 && z < 7)
-                    {
-                        textAccelerometer.setText("EN JUEGO");
-                        flagInGame = true;
-                    }
+                    UpdateScreen(z);
                     break;
 
                 case Sensor.TYPE_PROXIMITY :
-                    txt += "Proximidad: ";
-                    txt += event.values[0] + "\n";
 
-                    textProximity.setText(txt);
+                    textSensors.setText(getStringProximityData(event));
 
                     // Si detecta 0 lo represento
                     if(event.values[0]==0){
-                        textProximity.setText("SIGUIENTE PERSONAJE");
-                        textCharacter.setText(nextCharacter());
+                        if(pause)
+                            gameContinue();
+                        else
+                            gamePause();
                         flagInGame = false;
                     }
 
@@ -189,16 +198,103 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    private String nextCharacter() {
-        String character;
-        if(charactersCounter > 0)
-            character = characters.get(charactersCounter);
-        else
-            character = "NO HAY MAS PERSONAJES";
-        charactersCounter--;
-        return character;
+    private void gamePause() {
+        btnContinue.setVisibility(View.VISIBLE);
+        startStopTimer();
+        Parar_Sensores();
+        pause = true;
+        Toast.makeText(GameActivity.this, "JUEGO PAUSADO", Toast.LENGTH_SHORT).show();
     }
 
+    private void gameContinue() {
+        goEndGameGame();
+//        btnContinue.setVisibility(View.INVISIBLE);
+//        startStopTimer();
+//        Ini_Sensores();
+//        pause = false;
+//        Toast.makeText(GameActivity.this, "ADELANTE!", Toast.LENGTH_SHORT).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M) //-> permite manipular el color background
+    private void UpdateScreen(float z) {
+        if (z > 8)
+        {
+            //textSensors.setText("GANO -> SIGUIENTE PERSONAJE");
+            if(flagInGame){
+                textInfo.setText("Sostenga el dispositivo recto (horizontal) para continuar.");
+                textCharacter.setText(nextCharacter(true));
+                coordinatorLayout.setBackgroundColor(getColor(R.color.colorLightGreen));
+                flagInGame = false;
+            }
+        }
+        if (z < -8)
+        {
+            //textSensors.setText("PERDIÓ -> SIGUIENTE PERSONAJE");
+            if(flagInGame){
+                textInfo.setText("Sostenga el dispositivo recto (horizontal) para continuar.");
+                textCharacter.setText(nextCharacter(false));
+                coordinatorLayout.setBackgroundColor(getColor(R.color.colorRed));
+                flagInGame = false;
+            }
+
+        }
+        if (z > -4 && z < 4)
+        {
+            //textSensors.setText("EN JUEGO");
+            textInfo.setText("");
+            coordinatorLayout.setBackgroundColor(getColor(R.color.colorBlue));
+            flagInGame = true;
+        }
+    }
+
+    private String getStringProximityData(SensorEvent event) {
+        String txt = "";
+        txt += "Proximidad: ";
+        txt += event.values[0];
+        return txt;
+    }
+
+    private String getStringAccelerometerData(float x, float y, float z) {
+        String txt = "";
+        txt += "Acelerometro: ";
+        txt += "x = " + dosdecimales.format(x) + " m/seg2 ";
+        txt += ", y = " + dosdecimales.format(y) + " m/seg2 ";
+        txt += ", z = " + dosdecimales.format(z) + " m/seg2 ";
+        return txt;
+    }
+
+    private String nextCharacter(boolean okay) {
+        Personaje personaje = null;
+        if(personajesCounter > 0)
+            personaje = personajes.get(personajesCounter);
+        else{
+            personaje.setName("FIN");
+        }
+        personajesCounter--;
+        personaje.setAlreadyUsed(true);
+        personaje.setOkay(okay);
+        personajesResultado.add(personaje);
+
+        return personaje.getName();
+    }
+
+    private void goEndGameGame() {
+        stopTimer();
+        Parar_Sensores();
+
+        //calcular puntajes y pasarlos por bundle o sharedPreference
+        Intent intent = new Intent(GameActivity.this, EndGameActivity.class);
+
+        Gson gson = new Gson();
+        JsonElement element = gson.toJsonTree(personajesResultado, new TypeToken<ArrayList<Personaje>>() {}.getType());
+
+        JsonArray jsonArray = element.getAsJsonArray();
+
+        intent.putExtra("jsonData", jsonArray.toString());
+
+
+        startActivity(intent);
+    }
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -217,7 +313,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     protected void onRestart()
     {
         Ini_Sensores();
-
         super.onRestart();
     }
 
@@ -225,7 +320,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     protected void onDestroy()
     {
         Parar_Sensores();
-
         super.onDestroy();
     }
 
@@ -260,4 +354,5 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         startStopTimer();
         Ini_Sensores();
     }
+
 }

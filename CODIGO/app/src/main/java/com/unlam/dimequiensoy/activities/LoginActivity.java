@@ -82,9 +82,10 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                         if(response.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "Usuario Registrado.", Toast.LENGTH_SHORT).show();
-                            Toast.makeText(LoginActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
-                            Toast.makeText(LoginActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Usuario Logueado.", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(LoginActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(LoginActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
+                            
                             goToSelectOptionGame();
 
                         }else{
