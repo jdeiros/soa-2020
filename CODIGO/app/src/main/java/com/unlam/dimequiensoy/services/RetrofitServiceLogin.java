@@ -9,5 +9,5 @@ import retrofit2.http.POST;
 
 public interface RetrofitServiceLogin {
     @POST("api/login")
-    Call<UserResponse> register(@Body UserRequest request);
+    Call<UserResponse> login(@Body UserRequest request);
 }

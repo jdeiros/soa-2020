@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:text="CONTINUAR"
             android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/colorYellow"
+            android:backgroundTint="@color/colorOrange"
             android:visibility="invisible"
             android:layout_margin="10dp"
             android:textColor="@color/colorWhite" />

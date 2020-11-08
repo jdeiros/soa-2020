@@ -3,8 +3,14 @@ package com.unlam.dimequiensoy.activities;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,7 +29,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.unlam.dimequiensoy.R;
+import com.unlam.dimequiensoy.models.EventRequest;
+import com.unlam.dimequiensoy.models.EventResponse;
 import com.unlam.dimequiensoy.models.Personaje;
+import com.unlam.dimequiensoy.services.RetrofitServiceEventRegister;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -34,6 +43,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     public static final int MINUTE_IN_MILLI_SECONDS = 60000;
     public static final int TOTAL_GAME_PLAY_MILLI_SECONDS = 90000;
     private SensorManager mSensorManager;
+
+    public SharedPreferences mPref;
 
     private TextView textCharacter;
     private TextView textSensors;
@@ -58,6 +69,8 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        mPref = getApplicationContext().getSharedPreferences("TokenPref", MODE_PRIVATE);
+
         textSensors = (TextView) findViewById(R.id.textSensors);
         textCountdown = (TextView) findViewById(R.id.textCountdown);
         textCharacter  = (TextView) findViewById(R.id.textCharacter);
@@ -72,7 +85,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gameContinue();
+                gameContinue(mPref);
             }
         });
 
@@ -186,7 +199,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
                     // Si detecta 0 lo represento
                     if(event.values[0]==0){
                         if(pause)
-                            gameContinue();
+                            gameContinue(mPref);
                         else
                             gamePause();
                         flagInGame = false;
@@ -206,20 +219,60 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         Toast.makeText(GameActivity.this, "JUEGO PAUSADO", Toast.LENGTH_SHORT).show();
     }
 
-    private void gameContinue() {
-        goEndGameGame();
-//        btnContinue.setVisibility(View.INVISIBLE);
-//        startStopTimer();
-//        Ini_Sensores();
-//        pause = false;
-//        Toast.makeText(GameActivity.this, "ADELANTE!", Toast.LENGTH_SHORT).show();
+    private void eventContinueRegister(SharedPreferences mPref) {
+
+        String currentToken = mPref.getString("currentToken", null);
+
+        EventRequest request = new EventRequest();
+        request.setEnv(getString(R.string.environment));
+        request.setDescription("game_continue");
+        request.setType_events("game_events");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(getString(R.string.retrofit_server))
+                .build();
+
+        RetrofitServiceEventRegister retrofitServiceRegister = retrofit.create(RetrofitServiceEventRegister.class);
+        Call<EventResponse> call = retrofitServiceRegister.eventRegister("Bearer "+currentToken, request);
+
+        call.enqueue(new Callback<EventResponse>() {
+            @Override
+            public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+                if(response.isSuccessful()){
+                    Toast.makeText(GameActivity.this, response.body().toString(), Toast.LENGTH_SHORT).show();
+
+                }else{
+                    Toast.makeText(GameActivity.this, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<EventResponse> call, Throwable t) {
+                Toast.makeText(GameActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
+
+    private void gameContinue(SharedPreferences mPref) {
+        btnContinue.setVisibility(View.INVISIBLE);
+        startStopTimer();
+        Ini_Sensores();
+        pause = false;
+
+        eventContinueRegister(mPref);
+
+        Toast.makeText(GameActivity.this, "ADELANTE!", Toast.LENGTH_SHORT).show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M) //-> permite manipular el color background
     private void UpdateScreen(float z) {
         if (z > 8)
         {
-            //textSensors.setText("GANO -> SIGUIENTE PERSONAJE");
             if(flagInGame){
                 textInfo.setText("Sostenga el dispositivo recto (horizontal) para continuar.");
                 textCharacter.setText(nextCharacter(true));
@@ -229,7 +282,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
         if (z < -8)
         {
-            //textSensors.setText("PERDIÓ -> SIGUIENTE PERSONAJE");
             if(flagInGame){
                 textInfo.setText("Sostenga el dispositivo recto (horizontal) para continuar.");
                 textCharacter.setText(nextCharacter(false));
@@ -240,7 +292,6 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
         }
         if (z > -4 && z < 4)
         {
-            //textSensors.setText("EN JUEGO");
             textInfo.setText("");
             coordinatorLayout.setBackgroundColor(getColor(R.color.colorBlue));
             flagInGame = true;
@@ -281,18 +332,11 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     private void goEndGameGame() {
         stopTimer();
         Parar_Sensores();
-
-        //calcular puntajes y pasarlos por bundle o sharedPreference
         Intent intent = new Intent(GameActivity.this, EndGameActivity.class);
-
         Gson gson = new Gson();
         JsonElement element = gson.toJsonTree(personajesResultado, new TypeToken<ArrayList<Personaje>>() {}.getType());
-
         JsonArray jsonArray = element.getAsJsonArray();
-
         intent.putExtra("jsonData", jsonArray.toString());
-
-
         startActivity(intent);
     }
     @Override
@@ -303,9 +347,7 @@ public class GameActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onStop()
     {
-
         Parar_Sensores();
-
         super.onStop();
     }
 

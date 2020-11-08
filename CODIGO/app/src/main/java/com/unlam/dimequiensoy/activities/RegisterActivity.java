@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
         //mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //inicializo la variable sharepreference con el identificador "token" para este preference
-        mPref = getApplicationContext().getSharedPreferences("token", MODE_PRIVATE);
+        mPref = getApplicationContext().getSharedPreferences("TokenPref", MODE_PRIVATE);
         Editor editor = mPref.edit();
 
         mTextInputName = findViewById(R.id.textInputName);

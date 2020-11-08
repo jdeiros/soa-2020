@@ -9,6 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
 //    FirebaseAuth mAuth;
 //    DatabaseReference mDatabase;
-
+    SharedPreferences mPref;
     AlertDialog mDialog;
 
     @Override
@@ -46,22 +47,24 @@ public class LoginActivity extends AppCompatActivity {
 
 //        mAuth = FirebaseAuth.getInstance();
 //        mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        mPref = getApplicationContext().getSharedPreferences("TokenPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPref.edit();
         mDialog = new SpotsDialog.Builder().setContext(LoginActivity.this).setMessage("Espere un momento").build();
 
         mButtonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                login();
+                login(editor);
             }
         });
     }
 
-    private void login() {
+    private void login(SharedPreferences.Editor editor) {
         String email = mTextInputEmail.getText().toString();
         String password = mTextInputPassword.getText().toString();
 
         UserRequest request = new UserRequest();
+        request.setEnv(getString(R.string.environment));
         request.setEmail(email);
         request.setPassword(password);
 
@@ -71,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         RetrofitServiceLogin retrofitServiceRegister = retrofit.create(RetrofitServiceLogin.class);
-        Call<UserResponse> call = retrofitServiceRegister.register(request);
+        Call<UserResponse> call = retrofitServiceRegister.login(request);
 
 
         if(!email.isEmpty() && !password.isEmpty()){
@@ -85,7 +88,10 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Usuario Logueado.", Toast.LENGTH_SHORT).show();
                             //Toast.makeText(LoginActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
                             //Toast.makeText(LoginActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
-                            
+                            editor.putString("currentToken", response.body().getToken());
+                            editor.putString("refreshToken", response.body().getToken_refresh());
+                            editor.putString("userAlreadyLoggedIn", "true");
+                            editor.apply();
                             goToSelectOptionGame();
 
                         }else{
