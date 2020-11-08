@@ -21,7 +21,8 @@ import com.unlam.dimequiensoy.R;
 import com.unlam.dimequiensoy.includes.MyToolbar;
 import com.unlam.dimequiensoy.models.UserRequest;
 import com.unlam.dimequiensoy.models.UserResponse;
-import com.unlam.dimequiensoy.services.RetrofitServiceLogin;
+import com.unlam.dimequiensoy.interfaces.RetrofitServiceLogin;
+import com.unlam.dimequiensoy.threads.KeepLoginRunnable;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -86,12 +87,18 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
                         if(response.isSuccessful()){
                             Toast.makeText(LoginActivity.this, "Usuario Logueado.", Toast.LENGTH_SHORT).show();
-                            //Toast.makeText(LoginActivity.this, response.body().getToken(), Toast.LENGTH_SHORT).show();
-                            //Toast.makeText(LoginActivity.this, response.body().getToken_refresh(), Toast.LENGTH_SHORT).show();
-                            editor.putString("currentToken", response.body().getToken());
-                            editor.putString("refreshToken", response.body().getToken_refresh());
-                            editor.putString("userAlreadyLoggedIn", "true");
-                            editor.apply();
+                            synchronized (this) {
+                                editor.putString("currentToken", response.body().getToken());
+                                editor.putString("refreshToken", response.body().getToken_refresh());
+                                editor.apply();
+                            }
+
+
+                            startKeepLoginThread();
+                            synchronized (this) {
+                                editor.putBoolean("userAlreadyLoggedIn", true);
+                                editor.apply();
+                            }
                             goToSelectOptionGame();
 
                         }else{
@@ -117,6 +124,11 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void startKeepLoginThread() {
+        KeepLoginRunnable runnable = new KeepLoginRunnable(1, this);
+        new Thread(runnable).start();
     }
 
     private void goToSelectOptionGame() {

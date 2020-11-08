@@ -1,4 +1,4 @@
-package com.unlam.dimequiensoy.services;
+package com.unlam.dimequiensoy.interfaces;
 import com.unlam.dimequiensoy.models.EventRequest;
 import com.unlam.dimequiensoy.models.EventResponse;
 

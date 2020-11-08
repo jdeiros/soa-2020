@@ -32,7 +32,7 @@ import com.unlam.dimequiensoy.R;
 import com.unlam.dimequiensoy.models.EventRequest;
 import com.unlam.dimequiensoy.models.EventResponse;
 import com.unlam.dimequiensoy.models.Personaje;
-import com.unlam.dimequiensoy.services.RetrofitServiceEventRegister;
+import com.unlam.dimequiensoy.interfaces.RetrofitServiceEventRegister;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

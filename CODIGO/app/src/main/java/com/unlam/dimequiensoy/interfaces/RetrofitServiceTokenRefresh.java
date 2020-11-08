@@ -1,4 +1,4 @@
-package com.unlam.dimequiensoy.services;
+package com.unlam.dimequiensoy.interfaces;
 import com.unlam.dimequiensoy.models.UserResponse;
 import retrofit2.Call;
 import retrofit2.http.Header;

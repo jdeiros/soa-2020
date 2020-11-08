@@ -52,14 +52,24 @@
                 android:text="JUGAR"/>
 
             <Button
-                android:id="@+id/btnConfig"
+                android:id="@+id/btnLogOut"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:background="@drawable/rounded_button"
-                android:backgroundTint="@color/colorWhite"
+                android:backgroundTint="@color/colorRed"
+                android:textColor="@color/colorWhite"
                 android:layout_marginLeft="5dp"
-                android:text="CONFIGURAR"/>
+                android:text="CERRAR SESION"/>
+<!--            <Button-->
+<!--                android:id="@+id/btnConfig"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_weight="1"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/rounded_button"-->
+<!--                android:backgroundTint="@color/colorWhite"-->
+<!--                android:layout_marginLeft="5dp"-->
+<!--                android:text="CONFIGURAR"/>-->
         </LinearLayout>
     </LinearLayout>
 
