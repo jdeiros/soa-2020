@@ -1,12 +1,9 @@
 package com.unlam.dimequiensoy.threads;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-
 import com.unlam.dimequiensoy.interfaces.RetrofitServiceTokenRefresh;
 import com.unlam.dimequiensoy.models.UserResponse;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

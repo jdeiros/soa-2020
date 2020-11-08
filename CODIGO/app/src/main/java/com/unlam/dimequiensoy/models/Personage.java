@@ -1,11 +1,11 @@
 package com.unlam.dimequiensoy.models;
 
-public class Personaje {
+public class Personage {
     private String Name;
     private boolean alreadyUsed;
     private boolean okay;
     private int position;
-    public Personaje(int position, String name, boolean alreadyUsed, boolean okay) {
+    public Personage(int position, String name, boolean alreadyUsed, boolean okay) {
         this.position = position;
         Name = name;
         this.alreadyUsed = alreadyUsed;
@@ -20,7 +20,7 @@ public class Personaje {
         this.position = position;
     }
 
-    public Personaje() {
+    public Personage() {
     }
 
     public String getName() {

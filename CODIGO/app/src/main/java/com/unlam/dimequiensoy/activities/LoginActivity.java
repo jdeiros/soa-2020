@@ -6,17 +6,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
-//import com.google.firebase.database.DatabaseReference;
-//import com.google.firebase.database.FirebaseDatabase;
 import com.unlam.dimequiensoy.R;
 import com.unlam.dimequiensoy.includes.MyToolbar;
 import com.unlam.dimequiensoy.models.UserRequest;
@@ -26,12 +24,10 @@ import com.unlam.dimequiensoy.threads.KeepLoginRunnable;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final int MINUTES_KEEP_LOGIN = 25;
     TextInputEditText mTextInputEmail;
     TextInputEditText mTextInputPassword;
     Button mButtonLogin;
-
-//    FirebaseAuth mAuth;
-//    DatabaseReference mDatabase;
     SharedPreferences mPref;
     AlertDialog mDialog;
 
@@ -45,17 +41,15 @@ public class LoginActivity extends AppCompatActivity {
         mButtonLogin = findViewById(R.id.btnLogin);
 
         MyToolbar.show(this, "Login de usuario", true);
-
-//        mAuth = FirebaseAuth.getInstance();
-//        mDatabase = FirebaseDatabase.getInstance().getReference();
         mPref = getApplicationContext().getSharedPreferences("TokenPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = mPref.edit();
         mDialog = new SpotsDialog.Builder().setContext(LoginActivity.this).setMessage("Espere un momento").build();
 
-        mButtonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mButtonLogin.setOnClickListener(view -> {
+            if(isConnected()){
                 login(editor);
+            }else{
+                Toast.makeText(LoginActivity.this, "No hay conexion a internet", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -92,8 +86,6 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.putString("refreshToken", response.body().getToken_refresh());
                                 editor.apply();
                             }
-
-
                             startKeepLoginThread();
                             synchronized (this) {
                                 editor.putBoolean("userAlreadyLoggedIn", true);
@@ -104,7 +96,6 @@ public class LoginActivity extends AppCompatActivity {
                         }else{
                             Toast.makeText(LoginActivity.this, response.errorBody().toString(), Toast.LENGTH_SHORT).show();
                         }
-                        //fin mensaje
                         mDialog.hide();
                     }
 
@@ -121,18 +112,21 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             Toast.makeText(LoginActivity.this, "La contraseña y el email son obligatorios", Toast.LENGTH_SHORT).show();
         }
-
-
-
     }
 
     private void startKeepLoginThread() {
-        KeepLoginRunnable runnable = new KeepLoginRunnable(1, this);
+        KeepLoginRunnable runnable = new KeepLoginRunnable(MINUTES_KEEP_LOGIN, this);
         new Thread(runnable).start();
     }
 
     private void goToSelectOptionGame() {
         Intent intent = new Intent(LoginActivity.this, SelectOptionGameActivity.class);
         startActivity(intent);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(RegisterActivity.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null;
     }
 }

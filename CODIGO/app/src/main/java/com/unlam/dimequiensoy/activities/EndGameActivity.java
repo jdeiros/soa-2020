@@ -1,15 +1,10 @@
 package com.unlam.dimequiensoy.activities;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.unlam.dimequiensoy.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,33 +12,16 @@ import org.json.JSONObject;
 public class EndGameActivity extends AppCompatActivity {
 
     Button btnGoToOptionGame;
-
     private TextView textFinalResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_end_game);
-
-
-
         btnGoToOptionGame = findViewById(R.id.btnGoToOptionGame);
-
-        textFinalResult = (TextView) findViewById(R.id.textFinalResult);
+        textFinalResult = findViewById(R.id.textFinalResult);
         textFinalResult.setText(getResult(savedInstanceState,getIntent()));
-
-
-        btnGoToOptionGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                goToOptionGame();
-            }
-        });
-    }
-
-    private void loadResults(String stringFromExtras) {
-
+        btnGoToOptionGame.setOnClickListener(view -> goToOptionGame());
     }
 
     private String getResult(Bundle savedInstanceState, Intent intent) {
@@ -75,10 +53,8 @@ public class EndGameActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return  "Cantidad de personajes correctos: " + score;
     }
-
 
     private void goToOptionGame() {
         Intent intent = new Intent(EndGameActivity.this, SelectOptionGameActivity.class);
